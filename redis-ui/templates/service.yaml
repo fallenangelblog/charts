@@ -1,0 +1,29 @@
+{{- if .Values.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "application.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "application.name" . }}
+    version: "{{ .Values.image.tag }}"
+    release: "{{ .Release.Name }}"
+    {{- with .Values.service.labels -}}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ports:
+    {{- range $key, $value  := .Values.service.ports}}
+    - name: {{ $value.name }}
+      port: {{ $value.servicePort }}
+      protocol: TCP
+      targetPort: {{ $value.targetPort }}
+    {{- if $value.nodePort }}
+      nodePort: {{ $value.nodePort }}
+    {{- end }}
+    {{- end }}
+  selector:
+    app: {{ template "application.name" . }}
+    release: "{{ .Release.Name }}"
+  type: {{ .Values.service.type }}
+{{- end -}}

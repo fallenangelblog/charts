@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "application.fullname" . }}-envars
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "application.name" . }}
+    version: "{{ .Values.image.tag }}"
+    release: "{{ .Release.Name }}"
+data:
+  {{- range $key, $value := .Values.config }}
+  {{ $value.key }}: {{ $value.value | quote }}
+  {{- end }}

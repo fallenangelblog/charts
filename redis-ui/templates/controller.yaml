@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: {{ .Values.controller }}
+metadata:
+    name: {{ template "application.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+    labels:
+      app: {{ template "application.name" . }}
+      version: "{{ .Values.image.tag }}"
+      release: "{{ .Release.Name }}"
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "application.name" . }}
+      release: "{{ .Release.Name }}"
+  replicas: {{ .Values.replicas }}
+  {{- if eq .Values.controller "StatefulSet" }}
+  serviceName: {{ .Values.appName }}
+  podManagementPolicy: Parallel
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "application.name" . }}
+        release: "{{ .Release.Name }}"
+    {{- if .Values.prometheus.enabled }}
+      annotations:
+        prometheus.io/port: "{{ .Values.prometheus.port }}"
+        prometheus.io/scrape: "true"
+    {{- end }}
+    spec:
+    {{- if .Values.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.nodeAffinity.key }}
+                operator: {{ .Values.nodeAffinity.operator }}
+                values:
+                  - {{ .Values.nodeAffinity.values }}
+    {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+      containers:
+        - name: {{ template "application.name" . }}
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.command }}
+          command:
+          {{- range $key, $value  := .Values.command}}
+            - "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          {{- if .Values.args }}
+          args:
+          {{- range $key, $value  := .Values.args}}
+            - "{{ $value }}"
+          {{- end }}
+          {{- end }}
+          {{- if .Values.service.enabled }}
+          ports:
+          {{- range $key, $value  := .Values.service.ports}}
+          - name: {{ $value.name }}
+            containerPort: {{ $value.targetPort }}
+            protocol: TCP
+          {{- end }}
+          {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-envars
+          {{- if .Values.env}}
+          env:
+            {{- range $key, $value := .Values.dapi }}
+            - name: {{ $value.name }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $value.key }}
+            {{- end }}
+          {{- end }}
+          {{- if or .Values.resourceControl.enabled .Values.gpu.enabled}}
+          resources:
+            limits:
+              {{- if .Values.resourceControl.cpu.limit }}
+              cpu: {{ .Values.resourceControl.cpu.limit }}
+              {{- end }}
+              {{- if .Values.resourceControl.memory.limit }}
+              memory: {{ .Values.resourceControl.memory.limit }}Mi
+              {{- end }}
+              {{- if .Values.gpu.enabled }}
+              nvidia.com/gpu: {{ .Values.gpu.limit }}
+              {{- end }}
+          {{- end}}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+          {{- if .Values.persistence.pvc }}
+          {{- range $key, $value := .Values.persistence.pvc }}
+          - mountPath: {{ $value.in }}
+            name: {{ $value.name }}
+            {{- if $value.subpath }}
+            subPath: "{{ $value.subpath }}"
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.persistence.hostpath }}
+          {{- range $key, $value := .Values.persistence.hostpath }}
+          - mountPath: {{ $value.in }}
+            name: {{ $value.name }}
+            {{- if $value.subpath }}
+            subPath: "{{ $value.subpath }}"
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.persistence.configmap }}
+          {{- range $key, $value := .Values.persistence.configmap }}
+          - mountPath: {{ $value.path }}
+            name: {{ $value.name }}
+            {{- if $value.filename }}
+            subPath: "{{ $value.filename }}"
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      {{- if .Values.persistence.pvc }}
+      {{- range $key, $value := .Values.persistence.pvc }}
+      - name: {{ $value.name }}
+        persistentVolumeClaim:
+          claimName: {{ template "application.fullname" $ }}-{{ $value.name }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.persistence.hostpath }}
+      {{- range $key, $value := .Values.persistence.hostpath }}
+      - name: {{ $value.name }}
+        hostPath:
+          path: {{ $value.out }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.persistence.configmap }}
+      {{- range $key, $value := .Values.persistence.configmap }}
+      - name: {{ $value.name }}
+        configMap:
+          name: {{ $.Release.Name }}-config
+          items:
+            - key: {{ $value.filename }}
+              path: {{ $value.filename }}
+      {{- end }}
+      {{- end }}
+      {{- end }}

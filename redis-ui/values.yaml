@@ -1,0 +1,61 @@
+appName: redis-ui
+appVersion: lastet
+args: ''
+chartVersion: 0.0.1
+command: ''
+config: []
+controller: Deployment
+environment: ''
+gpu:
+  enabled: false
+  limit: ''
+group: ops
+image:
+  name: patrikx3/p3x-redis-ui
+  pullPolicy: Always
+  tag: lastet
+imagePullSecrets: ''
+ingress:
+  enabled: true
+  hosts: redis-ui.ai-test.hzyele.com
+  loadbalancer: nginx
+  locations:
+  - path: /
+    port: '80'
+    service: redis-ui
+  secret: ''
+  tls: false
+nodeAffinity:
+  enabled: false
+  key: kubernetes.io/hostname
+  operator: In
+  values: ''
+persistence:
+  configmap: []
+  enabled: true
+  hostpath: []
+  pvc:
+  - accessMode: ReadWriteOnce
+    in: /settings
+    name: config
+    size: '1'
+    storageClass: nfs-client
+prometheus:
+  enabled: false
+  port: ''
+replicas: 1
+resourceControl:
+  cpu:
+    limit: '1'
+  enabled: true
+  memory:
+    limit: '500'
+service:
+  enabled: true
+  ports:
+  - name: http
+    nodePort: ''
+    protocol: TCP
+    servicePort: '80'
+    targetPort: '7843'
+  type: ClusterIP

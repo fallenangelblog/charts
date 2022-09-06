@@ -1,0 +1,96 @@
+affinity: {}
+containerSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1000
+emqxAclConfig: |
+  {allow, {user, "dashboard"}, subscribe, ["$SYS/#"]}. {allow, {ipaddr, "127.0.0.1"}, pubsub, ["$SYS/#", "#"]}. {allow, all, subscribe, ["$SYS/brokers/+/clients/#"]}. {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}. {allow, all}.
+emqxConfig:
+  EMQX_CLUSTER__DISCOVERY: k8s
+  EMQX_CLUSTER__K8S__ADDRESS_TYPE: hostname
+  EMQX_CLUSTER__K8S__APISERVER: https://kubernetes.default.svc:443
+  EMQX_CLUSTER__K8S__APP_NAME: '{{ .Release.Name }}'
+  EMQX_CLUSTER__K8S__NAMESPACE: '{{ .Release.Namespace }}'
+  EMQX_CLUSTER__K8S__SERVICE_NAME: '{{ .Release.Name }}-headless'
+  EMQX_CLUSTER__K8S__SUFFIX: svc.cluster.local
+  EMQX_MANAGEMENT__DEFAULT_APPLICATION__ID: yele
+  EMQX_MANAGEMENT__DEFAULT_APPLICATION__SECRET: admin
+  EMQX_ALLOW_ANONYMOUS: 'false'
+  EMQX_NAME: '{{ .Release.Name }}'
+emqxLicenseSecretName: null
+emqxLoadedPlugins: |
+  {emqx_management, true}. {emqx_dashboard, true}. {emqx_modules, false}. {emqx_recon, true}. {emqx_retainer, true}. {emqx_telemetry, true}. {emqx_rule_engine, true}. {emqx_bridge_mqtt, false}. {emqx_auth_mnesia, true}.
+extraArgs: []
+extraEnv: []
+extraEnvFrom: []
+extraVolumeMounts: []
+extraVolumes: []
+image:
+  pullPolicy: IfNotPresent
+  repository: emqx/emqx
+ingress:
+  annotations: {}
+  dashboard:
+    annotations: {}
+    enabled: false
+    hosts:
+    - dashboard.emqx.local
+    path: /
+    pathType: ImplementationSpecific
+    tls: []
+  mgmt:
+    annotations: {}
+    enabled: false
+    hosts:
+    - api.emqx.local
+    path: /
+    pathType: ImplementationSpecific
+    tls: []
+  wss:
+    annotations: {}
+    enabled: false
+    hosts:
+    - wss.emqx.local
+    path: /mqtt
+    pathType: ImplementationSpecific
+    tls: []
+initContainers: {}
+metrics:
+  enabled: false
+  type: prometheus
+nodeSelector: {}
+persistence:
+  accessMode: ReadWriteOnce
+  enabled: false
+  size: 20Mi
+podManagementPolicy: Parallel
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+  fsGroupChangePolicy: Always
+  runAsUser: 1000
+  supplementalGroups:
+  - 1000
+recreatePods: false
+replicaCount: 3
+resources: {}
+service:
+  annotations: {}
+  dashboard: 18083
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  mgmt: 8081
+  mqtt: 1883
+  mqttssl: 8883
+  nodePorts:
+    dashboard: 30497
+    dashboardtls: null
+    mgmt: null
+    mqtt: 31963
+    mqttssl: null
+    ws: null
+    wss: null
+  type: NodePort
+  ws: 8083
+  wss: 8084
+tolerations: []

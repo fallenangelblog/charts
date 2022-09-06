@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: lastet
+description: redis-ui
+keywords:
+- redis-ui
+kubeVersion: '>= 1.13.0'
+maintainers:
+- email: 2579551318@qq.com
+  name: chenyi
+name: redis-ui
+version: 0.0.1
