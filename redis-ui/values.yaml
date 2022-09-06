@@ -13,7 +13,7 @@ group: ops
 image:
   name: patrikx3/p3x-redis-ui
   pullPolicy: Always
-  tag: lastet
+  tag: latest
 imagePullSecrets: ''
 ingress:
   enabled: true
