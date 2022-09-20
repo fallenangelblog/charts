@@ -92,6 +92,12 @@ spec:
           items:
           - key: emqx_auth_mnesia.conf
             path: emqx_auth_mnesia.conf
+      - name: emqx-prometheus
+        configMap:
+          name: {{ include "emqx.fullname" . }}-prometheus
+          items:
+          - key: emqx_prometheus.conf
+            path: emqx_prometheus.conf
       {{- if not .Values.persistence.enabled }}
       - name: emqx-data
         emptyDir: {}
@@ -195,6 +201,9 @@ spec:
           - name: emqx-mnesia
             mountPath: "/opt/emqx/etc/plugins/emqx_auth_mnesia.conf"
             subPath: "emqx_auth_mnesia.conf"
+          - name: emqx-prometheus
+            mountPath: "/opt/emqx/etc/plugins/emqx_prometheus.conf"
+            subPath: "emqx_prometheus.conf"
           {{- if and .Values.extraVolumes .Values.extraVolumeMounts }}
 {{ toYaml .Values.extraVolumeMounts | indent 10 }}
           {{- end }}

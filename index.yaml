@@ -3,20 +3,30 @@ entries:
   emqx:
   - apiVersion: v2
     appVersion: 4.4.4
-    created: "2022-09-06T16:42:04.857436035+08:00"
+    created: "2022-09-20T14:19:42.746490599+08:00"
     description: A Helm chart for EMQX
-    digest: 8af80e7aaf1c5b8c23fec82bc0065f7778ae4463fb4dee07f21e6eba9b9c6baf
+    digest: e7a6fa1e2a927bcf77e9c0c2660db859cc795cd4b1266854454540d8c841cda6
     name: emqx
     type: application
     urls:
     - https://fallenangelblog.github.io/charts/emqx-4.4.4.tgz
     version: 4.4.4
+  - apiVersion: v2
+    appVersion: 4.4.4
+    created: "2022-09-20T14:19:42.748317528+08:00"
+    description: A Helm chart for EMQX
+    digest: aea8d5486b4dc673a6bd928d5b6849a5fb0524f7ed525fad51dd4c1c2fd88c97
+    name: emqx
+    type: application
+    urls:
+    - https://fallenangelblog.github.io/charts/emqx/emqx-4.4.4.tgz
+    version: 4.4.4
   redis-ui:
   - apiVersion: v1
     appVersion: lastet
-    created: "2022-09-06T16:42:04.857899353+08:00"
+    created: "2022-09-20T14:19:42.746942219+08:00"
     description: redis-ui
-    digest: fa5ccf7f4119087c36ff5c58e04b0eb60c298fb158deeaf7dcadc8a4b63b10e9
+    digest: 2fb80f15954ee4409ada6a38391c730e67086d1e7b3116d2fa11b8a9c1f18fd3
     keywords:
     - redis-ui
     kubeVersion: '>= 1.13.0'
@@ -30,12 +40,12 @@ entries:
   rocketmq:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-09-06T16:42:04.858478109+08:00"
+    created: "2022-09-20T14:19:42.747544899+08:00"
     description: A Helm chart for Kubernetes
-    digest: 1c948265bee726885d5ea6f3f241b2c46e8aa16ba403d492f46e08a8455e6281
+    digest: de49f83a9173a920c1217dc0597e8ab1fc517e843cf714766a53edb9f5fce57e
     name: rocketmq
     type: application
     urls:
     - https://fallenangelblog.github.io/charts/rocketmq-1.1.0.tgz
     version: 1.1.0
-generated: "2022-09-06T16:42:04.856590668+08:00"
+generated: "2022-09-20T14:19:42.745427106+08:00"
