@@ -86,10 +86,10 @@ service:
   mqtt: 1883
   mqttssl: 8883
   nodePorts:
-    dashboard: 30497
+    dashboard: null
     dashboardtls: null
     mgmt: null
-    mqtt: 31963
+    mqtt: null
     mqttssl: null
     ws: null
     wss: null
